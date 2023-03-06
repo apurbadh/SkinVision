@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, User, Disease
 from schema import UserIn, UserOut, DiseaseIn, DiseaseOut
 import uvicorn
-# import tensorflow as tf
-# from PIL import Image
+import tensorflow as tf
+from PIL import Image
 
 app = FastAPI()
 
@@ -97,21 +97,21 @@ def read_disease(disease_id: int, db: Session = Depends(get_db)):
     return disease
 
 
-# @app.get('/classify')
-# def classify_disease(image: UploadFile = File(None), db: Session = Depends(get_db)):
+@app.get('/classify')
+def classify_disease(image: UploadFile = File(None), db: Session = Depends(get_db)):
 
-#     model_path = "models/skinvision.h5"
-#     model = tf.keras.models.load_model(model_path, compile=False)
+    model_path = "models/skinvision.h5"
+    model = tf.keras.models.load_model(model_path, compile=False)
     
-#     img = Image.open(image.file).convert("RGB")
-#     img = img.resize((125, 100)) 
-#     img_array = tf.keras.preprocessing.image.img_to_array(img)
-#     img_array = tf.expand_dims(img_array, 0)  
-#     img_array /= 255.0  
+    img = Image.open(image.file).convert("RGB")
+    img = img.resize((125, 100)) 
+    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0)  
+    img_array /= 255.0  
 
-#     prediction = model.predict(img_array)[0]
+    prediction = model.predict(img_array)[0]
 
-#     return db.query(Disease).filter(Disease.shortcut == prediction).first()
+    return db.query(Disease).filter(Disease.shortcut == prediction).first()
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8000, host='0.0.0.0')
